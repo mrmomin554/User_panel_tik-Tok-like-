@@ -6,6 +6,11 @@
 <title>MR_TOOLS Panel</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 <style>
 * {margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif;}
 body {
@@ -589,150 +594,72 @@ small {
 </div>
 
 <script>
-// Configuration - Same shared data system as admin panel
-const SHARED_DATA_KEY = 'mr_tools_global_data';
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyCCGGU1Tvy3HMd0bCi8X3R7Gda5ZtSCcXE",
+    authDomain: "user-panel-e7fb6.firebaseapp.com",
+    projectId: "user-panel-e7fb6",
+    storageBucket: "user-panel-e7fb6.firebasestorage.app",
+    messagingSenderId: "106974609939",
+    appId: "1:106974609939:web:32542001892c4242c6f5e6",
+    measurementId: "G-Y15T2HBY2J"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// Configuration
 const BOT_TOKEN = "8443808388:AAGY7ewfQvC_KXxz8BlMd0OLiB6rkITRTTs";
 const ADMIN_CHAT_ID = "7245153415";
 
-// SHARED DATA SYSTEM FUNCTIONS - Same as admin panel
-function getSharedData() {
-    try {
-        return JSON.parse(localStorage.getItem(SHARED_DATA_KEY)) || {
-            users: {},
-            blocks: {},
-            messages: {},
-            orders: {},
-            settings: {},
-            lastUpdated: Date.now()
-        };
-    } catch (e) {
-        return {
-            users: {},
-            blocks: {},
-            messages: {},
-            orders: {},
-            settings: {},
-            lastUpdated: Date.now()
-        };
-    }
-}
-
-function saveSharedData(data) {
-    data.lastUpdated = Date.now();
-    localStorage.setItem(SHARED_DATA_KEY, JSON.stringify(data));
-}
-
 // User Management
 let userChatId = localStorage.getItem('mr_tools_user_id');
+let userRef, userActivityRef, blockedUsersRef, timerBlockedUsersRef, userMessagesRef, broadcastMessagesRef;
 
 // Generate or get user chat ID (8-digit UID)
 if (!userChatId) {
     userChatId = generate8DigitUID();
     localStorage.setItem('mr_tools_user_id', userChatId);
+}
+
+// Initialize Firebase References
+function initializeFirebaseReferences() {
+    userRef = database.ref('users/' + userChatId);
+    userActivityRef = database.ref('user_activity/' + userChatId);
+    blockedUsersRef = database.ref('blocked_users');
+    timerBlockedUsersRef = database.ref('timer_blocked_users');
+    userMessagesRef = database.ref('user_messages/' + userChatId);
+    broadcastMessagesRef = database.ref('broadcast_messages');
+}
+
+// Initialize user data in Firebase
+function initializeUserData() {
+    const userInfo = getUserDeviceInfo();
     
-    // Store user in shared data system
-    const sharedData = getSharedData();
-    sharedData.users[userChatId] = {
-        id: userChatId,
+    const userData = {
+        userId: userChatId,
         firstVisit: new Date().toISOString(),
         lastActive: new Date().toISOString(),
-        platform: navigator.platform,
-        userAgent: navigator.userAgent,
-        screenResolution: `${screen.width}x${screen.height}`,
-        language: navigator.language,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        platform: userInfo.platform,
+        userAgent: userInfo.userAgent,
+        screenResolution: userInfo.screenResolution,
+        language: userInfo.language,
+        timezone: userInfo.timezone,
         orders: 0,
         status: 'active',
-        location: getUserApproximateLocation(),
-        ipInfo: await getIPInfo()
+        ip: 'fetching...'
     };
-    
-    saveSharedData(sharedData);
+
+    // Save to Firebase
+    userRef.set(userData);
+    userActivityRef.set(userData);
     
     // Send notification to admin
-    sendNewUserNotification(userChatId);
+    sendNewUserNotification(userChatId, userInfo);
 }
 
-// Display user ID
-document.getElementById('userIdDisplay').textContent = userChatId;
-document.getElementById('userInfo').style.display = 'block';
-
-// Update user activity in shared data
-function updateUserActivity() {
-    const sharedData = getSharedData();
-    if (sharedData.users[userChatId]) {
-        sharedData.users[userChatId].lastActive = new Date().toISOString();
-        sharedData.users[userChatId].orders = parseInt(localStorage.getItem("orderCount")) || 0;
-        
-        // Update status based on block
-        if (sharedData.blocks && sharedData.blocks[userChatId]) {
-            const blockData = sharedData.blocks[userChatId];
-            if (blockData.type === 'permanent') {
-                sharedData.users[userChatId].status = 'blocked';
-            } else if (blockData.type === 'temporary') {
-                sharedData.users[userChatId].status = 'timer_blocked';
-            }
-        } else {
-            sharedData.users[userChatId].status = 'active';
-        }
-        
-        saveSharedData(sharedData);
-    }
-}
-
-// Get approximate location based on timezone and language
-function getUserApproximateLocation() {
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const language = navigator.language;
-    
-    let location = 'Unknown';
-    
-    // Basic location detection based on timezone
-    if (timezone.includes('Asia/Dhaka')) {
-        location = 'Bangladesh';
-    } else if (timezone.includes('India')) {
-        location = 'India';
-    } else if (timezone.includes('Pakistan')) {
-        location = 'Pakistan';
-    } else if (timezone.includes('US') || timezone.includes('America')) {
-        location = 'United States';
-    } else if (timezone.includes('Europe')) {
-        location = 'Europe';
-    }
-    
-    return {
-        timezone: timezone,
-        language: language,
-        country: location
-    };
-}
-
-// Get IP information (approximate)
-async function getIPInfo() {
-    try {
-        const response = await fetch('https://ipapi.co/json/');
-        const data = await response.json();
-        return {
-            ip: data.ip,
-            city: data.city,
-            region: data.region,
-            country: data.country_name,
-            countryCode: data.country_code,
-            timezone: data.timezone,
-            isp: data.org
-        };
-    } catch (error) {
-        return {
-            ip: 'Unknown',
-            city: 'Unknown',
-            region: 'Unknown',
-            country: 'Unknown',
-            error: 'Failed to fetch IP info'
-        };
-    }
-}
-
-// Generate 8-digit UID
+// Generate 8-digit UID - শুধুমাত্র 8-digit সংখ্যা
 function generate8DigitUID() {
     const min = 10000000;
     const max = 99999999;
@@ -741,27 +668,32 @@ function generate8DigitUID() {
 }
 
 // Send new user notification to admin
-function sendNewUserNotification(chatId) {
-    const sharedData = getSharedData();
-    const user = sharedData.users[chatId];
-    
+function sendNewUserNotification(chatId, userInfo) {
     const message = `
 🆕 নতুন ইউজার সংযুক্ত!
 ━━━━━━━━━━━━━━━━━━
 👤 ইউজার আইডি: ${chatId}
 ⏰ সময়: ${new Date().toLocaleString()}
-📍 লোকেশন: ${user.location.country} (${user.location.timezone})
 🌐 ডিভাইস তথ্য:
-   - Platform: ${user.platform}
-   - Screen: ${user.screenResolution}
-   - Language: ${user.language}
-   - IP: ${user.ipInfo.ip || 'Unknown'}
-   - City: ${user.ipInfo.city || 'Unknown'}
+   - Platform: ${userInfo.platform}
+   - Screen: ${userInfo.screenResolution}
+   - Language: ${userInfo.language}
+   - Timezone: ${userInfo.timezone}
 
 💬 এই আইডি দিয়ে ইউজারকে ব্লক/আনব্লক করতে পারবেন।
     `;
 
     sendTelegramMessage(message);
+}
+
+function getUserDeviceInfo() {
+    return {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        screenResolution: `${screen.width}x${screen.height}`,
+        language: navigator.language,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    };
 }
 
 function sendTelegramMessage(message) {
@@ -776,81 +708,96 @@ function sendTelegramMessage(message) {
     }).catch(error => console.error('Telegram error:', error));
 }
 
-// Check if user is blocked using shared data
-function checkUserStatus() {
-    const sharedData = getSharedData();
-    
-    if (sharedData.blocks && sharedData.blocks[userChatId]) {
-        const blockData = sharedData.blocks[userChatId];
-        
-        if (blockData.type === 'permanent') {
-            showBlockMessage();
-            return;
-        }
-        
-        if (blockData.type === 'temporary') {
-            const currentTime = new Date().getTime();
-            const blockEndTime = blockData.blockTime + (blockData.duration * 60 * 1000);
-            
-            if (currentTime < blockEndTime) {
-                const remainingTime = blockEndTime - currentTime;
-                const remainingMinutes = Math.floor(remainingTime / (60 * 1000));
-                const remainingSeconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
-                
-                showTimerBlockMessage(remainingMinutes, remainingSeconds);
-                return;
-            } else {
-                // Block time expired, remove from blocks
-                delete sharedData.blocks[userChatId];
-                saveSharedData(sharedData);
-                updateUserActivity();
-            }
-        }
-    }
-    
-    // Not blocked
-    hideBlockMessage();
-}
+// Real-time listener for user status
+function setupRealtimeListeners() {
+    // Listen for block status
+    blockedUsersRef.child(userChatId).on('value', (snapshot) => {
+        checkUserStatus();
+    });
 
-// Check for admin messages using shared data
-function checkAdminMessages() {
-    const sharedData = getSharedData();
-    
-    // Check private messages
-    if (sharedData.messages && sharedData.messages[userChatId] && sharedData.messages[userChatId].length > 0) {
-        const unreadMessages = sharedData.messages[userChatId].filter(msg => !msg.read);
-        
-        if (unreadMessages.length > 0) {
-            const latestMessage = unreadMessages[0];
-            showAdminMessage(latestMessage.message);
-            
+    // Listen for timer block status
+    timerBlockedUsersRef.child(userChatId).on('value', (snapshot) => {
+        checkUserStatus();
+    });
+
+    // Listen for private messages
+    userMessagesRef.on('child_added', (snapshot) => {
+        const message = snapshot.val();
+        if (!message.read) {
+            showAdminMessage(message.message);
             // Mark as read
-            sharedData.messages[userChatId] = sharedData.messages[userChatId].map(msg => {
-                if (msg.timestamp === latestMessage.timestamp) {
-                    return {...msg, read: true};
-                }
-                return msg;
-            });
-            
-            saveSharedData(sharedData);
+            userMessagesRef.child(snapshot.key).update({ read: true });
         }
-    }
-    
-    // Check broadcast messages
-    if (sharedData.messages && sharedData.messages['broadcast'] && sharedData.messages['broadcast'].length > 0) {
-        const broadcasts = sharedData.messages['broadcast'];
-        const latestBroadcast = broadcasts[broadcasts.length - 1];
-        
-        // Check if user has seen this broadcast
+    });
+
+    // Listen for broadcast messages
+    broadcastMessagesRef.limitToLast(1).on('child_added', (snapshot) => {
+        const message = snapshot.val();
         const seenBroadcasts = JSON.parse(localStorage.getItem('mr_tools_seen_broadcasts') || '{}');
-        const broadcastKey = latestBroadcast.timestamp;
         
-        if (!seenBroadcasts[broadcastKey]) {
-            showAdminMessage(`📢 ব্রডকাস্ট: ${latestBroadcast.message}`);
-            seenBroadcasts[broadcastKey] = true;
+        if (!seenBroadcasts[snapshot.key]) {
+            showAdminMessage(`📢 ব্রডকাস্ট: ${message.message}`);
+            seenBroadcasts[snapshot.key] = true;
             localStorage.setItem('mr_tools_seen_broadcasts', JSON.stringify(seenBroadcasts));
         }
-    }
+    });
+}
+
+// Check if user is blocked
+function checkUserStatus() {
+    blockedUsersRef.child(userChatId).once('value').then((blockSnapshot) => {
+        timerBlockedUsersRef.child(userChatId).once('value').then((timerSnapshot) => {
+            
+            // Check for permanent block
+            if (blockSnapshot.exists()) {
+                showBlockMessage();
+                updateUserStatus('blocked');
+                return;
+            }
+            
+            // Check for timer block
+            if (timerSnapshot.exists()) {
+                const blockData = timerSnapshot.val();
+                const currentTime = new Date().getTime();
+                const blockEndTime = blockData.blockTime + (blockData.duration * 60 * 1000);
+                
+                if (currentTime < blockEndTime) {
+                    // Still blocked - calculate remaining time
+                    const remainingTime = blockEndTime - currentTime;
+                    const remainingMinutes = Math.floor(remainingTime / (60 * 1000));
+                    const remainingSeconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+                    
+                    showTimerBlockMessage(remainingMinutes, remainingSeconds);
+                    updateUserStatus('timer_blocked');
+                    return;
+                } else {
+                    // Block time expired, remove from timer block
+                    timerBlockedUsersRef.child(userChatId).remove();
+                    updateUserStatus('active');
+                }
+            }
+            
+            // Not blocked
+            hideBlockMessage();
+            updateUserStatus('active');
+        });
+    });
+}
+
+// Update user status in Firebase
+function updateUserStatus(status) {
+    userActivityRef.update({
+        status: status,
+        lastActive: new Date().toISOString()
+    });
+}
+
+// Update user activity periodically
+function updateUserActivity() {
+    userActivityRef.update({
+        lastActive: new Date().toISOString(),
+        orders: parseInt(localStorage.getItem("orderCount")) || 0
+    });
 }
 
 // Show admin message modal
@@ -880,9 +827,11 @@ function showTimerBlockMessage(minutes, seconds) {
     document.getElementById('mainForm').style.display = 'none';
     document.getElementById('userInfo').style.display = 'block';
     
+    // Update countdown display
     const timeDisplay = document.getElementById('blockTimeRemaining');
     timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
     
+    // Update the message text
     document.getElementById('timerBlockText').innerHTML = 
         `আপনার অ্যাকাউন্ট <span id="blockTimeRemaining">${minutes}:${seconds.toString().padStart(2, '0')}</span> এর জন্য ব্লক করা হয়েছে`;
 }
@@ -894,19 +843,43 @@ function hideBlockMessage() {
     document.getElementById('userInfo').style.display = 'block';
 }
 
+// Initialize the application
+function initializeApp() {
+    initializeFirebaseReferences();
+    
+    // Check if user exists in Firebase, if not create
+    userRef.once('value').then((snapshot) => {
+        if (!snapshot.exists()) {
+            initializeUserData();
+        } else {
+            // Update last active time
+            updateUserActivity();
+        }
+        
+        // Display user ID
+        document.getElementById('userIdDisplay').textContent = userChatId;
+        document.getElementById('userInfo').style.display = 'block';
+        
+        // Setup real-time listeners
+        setupRealtimeListeners();
+        
+        // Initial checks
+        checkUserStatus();
+    });
+}
+
 // Check user status and messages every 3 seconds
 setInterval(() => {
     checkUserStatus();
-    checkAdminMessages();
     updateUserActivity();
 }, 3000);
 
-// Initial checks
-checkUserStatus();
-checkAdminMessages();
-updateUserActivity();
+// Initialize the app when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
 
-// Original application code with shared data integration
+// Original application code
 const serviceSelect = document.getElementById("serviceType");
 const videoInput = document.getElementById("videoUrl");
 const amountInput = document.getElementById("amount");
@@ -922,32 +895,9 @@ const progressBar = document.getElementById("progressBar");
 const orderCooldown = 10; // minutes
 const ordersNeededToReset = 5;
 
-// Load data from shared data system
-function loadUserData() {
-    const sharedData = getSharedData();
-    const userData = sharedData.users[userChatId] || {};
-    
-    return {
-        orderCount: userData.orders || 0,
-        savedUrl: localStorage.getItem("savedUrl") || "",
-        ordersWithCurrentLink: parseInt(localStorage.getItem("ordersWithCurrentLink")) || 0
-    };
-}
-
-function saveUserData(data) {
-    const sharedData = getSharedData();
-    if (sharedData.users[userChatId]) {
-        sharedData.users[userChatId].orders = data.orderCount;
-        saveSharedData(sharedData);
-    }
-    localStorage.setItem("savedUrl", data.savedUrl);
-    localStorage.setItem("ordersWithCurrentLink", data.ordersWithCurrentLink.toString());
-}
-
-let userData = loadUserData();
-let orderCount = userData.orderCount;
-let savedUrl = userData.savedUrl;
-let ordersWithCurrentLink = userData.ordersWithCurrentLink;
+let orderCount = parseInt(localStorage.getItem("orderCount")) || 0;
+let savedUrl = localStorage.getItem("savedUrl") || "";
+let ordersWithCurrentLink = parseInt(localStorage.getItem("ordersWithCurrentLink")) || 0;
 
 // Update order info
 function updateOrderInfo() {
@@ -960,9 +910,6 @@ function updateOrderInfo() {
         resetLinkNotice.innerText = ordersWithCurrentLink > 0 ?
             `🔒 লিংক লক! ${ordersNeededToReset - ordersWithCurrentLink} অর্ডার বাকি।` : "";
     }
-    
-    // Save to shared data
-    saveUserData({orderCount, savedUrl, ordersWithCurrentLink});
 }
 
 // Lock URL input
@@ -1002,7 +949,6 @@ videoInput.addEventListener("input", function() {
         localStorage.setItem("savedUrl", savedUrl);
         lockUrlForce();
         resetLinkNotice.innerText = "🔒 লিংক লক! 5 অর্ডার করতে হবে রিসেটের আগে।";
-        updateOrderInfo();
     }
 });
 
@@ -1032,10 +978,7 @@ checkCountdown();
 
 // Settings info
 settingsBtn.addEventListener("click", ()=>{
-    const sharedData = getSharedData();
-    const user = sharedData.users[userChatId] || {};
-    
-    alert(`এটা বানানো হয়েছে টিকটকে লাইক ভিউ নেওয়ার জন্য ⚡👍!\nDeveloper: MR_MOMIN 🖥️🖥️\nVersion: 3.0\nYour User ID: ${userChatId}\nLocation: ${user.location?.country || 'Unknown'}\nFor demo and learning purposes only.`);
+    alert(`এটা বানানো হয়েছে টিকটকে লাইক ভিউ নেওয়ার জন্য ⚡👍!\nDeveloper: MR_MOMIN 🖥️🖥️\nVersion: 3.0\nYour User ID: ${userChatId}\nFor demo and learning purposes only.`);
 });
 
 // Get real device info
@@ -1064,29 +1007,28 @@ async function getUserInfo() {
 document.getElementById("orderForm").addEventListener("submit", async e=>{
     e.preventDefault();
     
-    // Check if user is blocked using shared data
-    const sharedData = getSharedData();
-    if (sharedData.blocks && sharedData.blocks[userChatId]) {
-        const blockData = sharedData.blocks[userChatId];
+    // Check if user is blocked using Firebase
+    const blockSnapshot = await blockedUsersRef.child(userChatId).once('value');
+    const timerSnapshot = await timerBlockedUsersRef.child(userChatId).once('value');
+    
+    if (blockSnapshot.exists()) {
+        alertBox.style.color="#ff6666"; 
+        alertBox.innerText="❌ আপনার অ্যাকাউন্ট অ্যাডমিন দ্বারা ব্লক করা হয়েছে!";
+        showBlockMessage();
+        return;
+    }
+    
+    if (timerSnapshot.exists()) {
+        const blockData = timerSnapshot.val();
+        const currentTime = new Date().getTime();
+        const blockEndTime = blockData.blockTime + (blockData.duration * 60 * 1000);
         
-        if (blockData.type === 'permanent') {
-            alertBox.style.color="#ff6666"; 
-            alertBox.innerText="❌ আপনার অ্যাকাউন্ট অ্যাডমিন দ্বারা ব্লক করা হয়েছে!";
-            showBlockMessage();
+        if (currentTime < blockEndTime) {
+            const remainingMinutes = Math.ceil((blockEndTime - currentTime) / (60 * 1000));
+            alertBox.style.color="#ffcc66"; 
+            alertBox.innerText=`⏱️ আপনার অ্যাকাউন্ট ${remainingMinutes} মিনিটের জন্য ব্লক করা হয়েছে!`;
+            showTimerBlockMessage(remainingMinutes, 0);
             return;
-        }
-        
-        if (blockData.type === 'temporary') {
-            const currentTime = new Date().getTime();
-            const blockEndTime = blockData.blockTime + (blockData.duration * 60 * 1000);
-            
-            if (currentTime < blockEndTime) {
-                const remainingMinutes = Math.ceil((blockEndTime - currentTime) / (60 * 1000));
-                alertBox.style.color="#ffcc66"; 
-                alertBox.innerText=`⏱️ আপনার অ্যাকাউন্ট ${remainingMinutes} মিনিটের জন্য ব্লক করা হয়েছে!`;
-                showTimerBlockMessage(remainingMinutes, 0);
-                return;
-            }
         }
     }
     
@@ -1118,25 +1060,22 @@ document.getElementById("orderForm").addEventListener("submit", async e=>{
 
             // Update order counts
             orderCount++; ordersWithCurrentLink++;
-            saveUserData({orderCount, savedUrl, ordersWithCurrentLink});
+            localStorage.setItem("orderCount", orderCount);
+            localStorage.setItem("ordersWithCurrentLink", ordersWithCurrentLink);
             updateOrderInfo();
             lockUrlForce();
             
-            // Update user activity in shared data
+            // Update user activity in Firebase
             updateUserActivity();
 
             // Send Telegram notification for every 5 orders
             if(ordersWithCurrentLink >= ordersNeededToReset){
                 const userInfo = await getUserInfo();
-                const sharedData = getSharedData();
-                const user = sharedData.users[userChatId] || {};
-                
                 const message = 
 `🛒 নতুন অর্ডার সম্পন্ন 🛒
 ━━━━━━━━━━━━━━━━━━
 🆔 অর্ডার আইডি: #${orderId}
 👤 ইউজার আইডি: ${userChatId}
-📍 লোকেশন: ${user.location?.country || 'Unknown'}
 📦 সার্ভিস: ${service.toUpperCase()}
 🔢 পরিমাণ: ${amount}
 🔗 ভিডিও লিংক: ${savedUrl}
